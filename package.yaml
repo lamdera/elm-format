@@ -46,17 +46,6 @@ dependencies:
   elm-format-lib: {}
 
 
-executables:
-  elm-format:
-    main: Main.hs
-    source-dirs:
-      - src
-      - generated
-
-    generated-other-modules:
-      - Build_elm_format
-
-
 tests:
   elm-format-tests:
     main: Test.hs
@@ -80,3 +69,34 @@ tests:
       QuickCheck: ">= 2.12.6.1 && < 3"
       quickcheck-io: ">= 0.2.0 && < 0.3"
       elm-format-test-lib: {}
+
+
+# Lamdera additions
+
+library:
+  exposed-modules:
+  - ElmFormat.CliFlags
+  - ElmFormat.Messages
+  - ElmFormat.Version
+  - ElmFormat.Cli
+  - Build_elm_format
+
+  source-dirs:
+  - src
+  - generated
+
+
+
+# Disable the exe as we don't need to build it, and cabal has a bug meaning stack has to build every exe at least once
+# regardless of which exe we're building: https://github.com/commercialhaskell/stack/issues/1406#issuecomment-1242690673
+# executables:
+#   elm-format:
+#     main: Main.hs
+#     source-dirs:
+#       - src
+#       - generated
+
+#     generated-other-modules:
+#       - Build_elm_format
+
+

@@ -1,5 +1,5 @@
 {-# LANGUAGE DataKinds #-}
-module ElmFormat.Cli (mainIO, main, main') where
+module ElmFormat.Cli (mainIO, main, main', format) where
 
 import Prelude ()
 import Relude hiding (exitFailure, exitSuccess, putStr, putStrLn)
