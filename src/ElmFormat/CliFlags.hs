@@ -61,7 +61,7 @@ helpInfo elmFormatVersion experimental =
   where
     top =
         PP.vcat $ concat
-            [ [ PP.text $ "elm-format " ++ elmFormatVersion ]
+            [ [ PP.text $ "lamdera format " ++ elmFormatVersion ]
             , case experimental of
                   Just surveyUrl ->
                       [ (PP.<$>) (PP.text "") $
@@ -79,9 +79,9 @@ helpInfo elmFormatVersion experimental =
     examples =
         linesToDoc
         [ "Examples:"
-        , "  elm-format Main.elm                     # formats Main.elm"
-        , "  elm-format Main.elm --output Main2.elm  # formats Main.elm as Main2.elm"
-        , "  elm-format src/                         # format all *.elm files in the src directory"
+        , "  lamdera format Main.elm                     # formats Main.elm"
+        , "  lamdera format Main.elm --output Main2.elm  # formats Main.elm as Main2.elm"
+        , "  lamdera format src/                         # format all *.elm files in the src directory"
         , ""
         , "Full guide to using elm-format at <https://github.com/avh4/elm-format>"
         ]

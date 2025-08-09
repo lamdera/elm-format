@@ -1,4 +1,4 @@
-module CommandLine.Program (ProgramResult(..), ProgramIO, run, failed, CommandLine.Program.error, showUsage, liftEither, liftM, liftME, mapError) where
+module CommandLine.Program (ProgramResult(..), ProgramIO, run, runWithProgName, failed, CommandLine.Program.error, showUsage, liftEither, liftM, liftME, mapError) where
 
 -- Common handling for command line programs
 
@@ -109,7 +109,7 @@ run flagsParser run' args =
             OptParse.execParserPure parsePreferences flagsParser
     in
     do
-        flags <- handleParseResult $ parseFlags args
+        flags <- handleParseResultWith Nothing $ parseFlags args
         case flags of
             Nothing -> return ()
             Just flags' ->
@@ -117,7 +117,7 @@ run flagsParser run' args =
                     result <- (\(ProgramIO m) -> m) $ run' flags'
                     case result of
                         ShowUsage ->
-                            (handleParseResult $ parseFlags ["--help"])
+                            (handleParseResultWith Nothing $ parseFlags ["--help"])
                                 -- TODO: handleParseResult is exitSuccess, so we never get to exitFailure
                                 >> exitFailure
 
@@ -133,18 +133,60 @@ run flagsParser run' args =
 
 
 {-| copied from Options.Applicative -}
-handleParseResult :: World m => OptParse.ParserResult a -> m (Maybe a)
-handleParseResult (OptParse.Success a) = return (Just a)
-handleParseResult (OptParse.Failure failure) = do
-    progn <- getProgName
+handleParseResultWith :: World m => Maybe String -> OptParse.ParserResult a -> m (Maybe a)
+handleParseResultWith _ (OptParse.Success a) = return (Just a)
+handleParseResultWith progOverride (OptParse.Failure failure) = do
+    progn <- case progOverride of
+        Just name -> return (Text.pack name)
+        Nothing -> getProgName
     let (msg, exit) = OptParse.renderFailure failure (Text.unpack progn)
     case exit of
         ExitSuccess -> putStrLn (Text.pack msg) *> exitSuccess *> return Nothing
         _           -> putStrLnStderr (Text.pack msg) *> exitFailure *> return Nothing
-handleParseResult (OptParse.CompletionInvoked _) =
+handleParseResultWith _ (OptParse.CompletionInvoked _) =
     -- do
     --     progn <- getProgName
     --     msg <- OptParse.execCompletion compl progn
     --     putStr msg
     --     const undefined <$> exitSuccess
     Relude.error "Shell completion not yet implemented"
+
+-- | Like 'run', but override the program name used in help/usage rendering.
+runWithProgName ::
+    World m =>
+    ToConsole err =>
+    OptParse.ParserInfo flags
+    -> String
+    -> (flags -> ProgramIO m err ())
+    -> [String]
+    -> m ()
+runWithProgName flagsParser progName run' args =
+    let
+        parsePreferences =
+            OptParse.prefs (mempty <> OptParse.showHelpOnError)
+
+        parseFlags =
+            OptParse.execParserPure parsePreferences flagsParser
+    in
+    do
+        flags <- handleParseResultWith (Just progName) $ parseFlags args
+        case flags of
+            Nothing -> return ()
+            Just flags' ->
+                do
+                    result <- (\(ProgramIO m) -> m) $ run' flags'
+                    case result of
+                        ShowUsage ->
+                            (handleParseResultWith (Just progName) $ parseFlags ["--help"])
+                                -- TODO: handleParseResult is exitSuccess, so we never get to exitFailure
+                                >> exitFailure
+
+                        ProgramError err ->
+                            putStrLnStderr (toConsole err)
+                                >> exitFailure
+
+                        ProgramSuccess () ->
+                            exitSuccess
+
+                        ProgramFailed ->
+                            exitFailure

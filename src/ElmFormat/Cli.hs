@@ -119,7 +119,7 @@ main =
 
 main' :: World m => String -> Maybe String -> List String -> m ()
 main' elmFormatVersion experimental args =
-    Program.run (Flags.parser elmFormatVersion experimental) run' args
+    Program.runWithProgName (Flags.parser elmFormatVersion experimental) "lamdera format" run' args
     where
         run' :: World m => Flags.Config -> ProgramIO m ErrorMessage ()
         run' flags =
