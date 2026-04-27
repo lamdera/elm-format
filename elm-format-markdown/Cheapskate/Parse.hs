@@ -6,6 +6,7 @@ import Cheapskate.ParserCombinators
 import Cheapskate.Util
 import Cheapskate.Inlines
 import Cheapskate.Types
+import Control.Monad
 import Data.Char hiding (Space)
 import qualified Data.Set as Set
 import Prelude hiding (takeWhile)
