@@ -15,6 +15,7 @@
 /_build/
 /dist-newstyle/
 /bin/
+.stack-work
 
 # Output files
 /dist/
