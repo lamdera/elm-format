@@ -36,7 +36,6 @@ ghc-options:
 
 dependencies:
   aeson: ">= 2.1.0.0 && < 2.2"
-  ansi-wl-pprint: ">= 0.6.9 && < 0.7"
   base: ">= 4.15.0.0 && < 5"
   bytestring: ">= 0.11.3.0 && < 0.12"
   optparse-applicative: ">= 0.17.0.0 && < 0.18"

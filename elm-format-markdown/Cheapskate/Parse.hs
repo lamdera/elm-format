@@ -16,6 +16,7 @@ import Data.Foldable (toList)
 import Data.Sequence ((|>), viewr, ViewR(..), singleton, Seq)
 import qualified Data.Sequence as Seq
 import Control.Monad.RWS
+import Control.Monad (guard, replicateM, unless, when)
 import Control.Applicative
 import qualified Data.Map as M
 import Data.List (intercalate)

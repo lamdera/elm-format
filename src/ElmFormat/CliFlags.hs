@@ -8,7 +8,7 @@ import ElmVersion (ElmVersion(..))
 import qualified ElmVersion
 import qualified Data.String as String
 import qualified Options.Applicative as Opt
-import qualified Text.PrettyPrint.ANSI.Leijen as PP
+import qualified Options.Applicative.Help.Pretty as PP
 
 
 data Config = Config
@@ -61,16 +61,18 @@ helpInfo elmFormatVersion experimental =
   where
     top =
         PP.vcat $ concat
-            [ [ PP.text $ "lamdera format " ++ elmFormatVersion ]
+            [ [ PP.pretty $ "lamdera format " ++ elmFormatVersion ]
             , case experimental of
                   Just surveyUrl ->
-                      [ (PP.<$>) (PP.text "") $
-                        PP.indent 4 $ PP.bold $
-                        PP.fillSep $ map PP.text $ String.words $
-                          "This version of elm-format contains features " ++
-                          "that may or may not appear in future releases. " ++
-                          "You can provide feedback about experimental features " ++
-                          "at " ++ surveyUrl
+                      [ PP.vsep
+                          [ PP.pretty ("" :: String)
+                          , PP.indent 4 $ PP.annotate PP.bold $
+                            PP.fillSep $ map PP.pretty $ String.words $
+                              "This version of elm-format contains features " ++
+                              "that may or may not appear in future releases. " ++
+                              "You can provide feedback about experimental features " ++
+                              "at " ++ surveyUrl
+                          ]
                       ]
                   Nothing ->
                       []
@@ -89,7 +91,7 @@ helpInfo elmFormatVersion experimental =
 
 linesToDoc :: [String] -> PP.Doc
 linesToDoc lineList =
-    PP.vcat (map PP.text lineList)
+    PP.vcat (map PP.pretty lineList)
 
 yes :: Opt.Parser Bool
 yes =
